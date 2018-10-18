@@ -11,7 +11,10 @@ export const router = new Router([
     $: links.posts(),
     enter: () => routeState.setRoute('posts')
   },
-
+  {
+    $: links.shoutboard(),
+    enter: () => routeState.setRoute('shoutboard')
+  },
   {
     $: links.profile(':profileId'),
     enter: ({ params: { profileId } }) => {
