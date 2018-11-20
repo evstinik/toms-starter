@@ -144,7 +144,11 @@ class CreatePost extends React.Component<{}, {}> {
                 placeholder={this.error || "Enter name"} required
             />
             <hr />
-              <TextareaAutosize type="text" className="shadow appearance-none border border-red rounded w-full py-2 px-3 text-grey-darker mb-3 leading-tight focus:outline-none focus:shadow-outline" value={this.post.text} onChange={(event) => this.handleUserInput(event, "text")} placeholder="Enter text" required/>
+              <TextareaAutosize type="text" className="shadow appearance-none border border-red rounded w-full py-2 px-3 text-grey-darker mb-3 leading-tight focus:outline-none focus:shadow-outline" 
+                value={this.post.text} 
+                onChange={(event) => this.handleUserInput(event, "text")} 
+                placeholder="Enter text" required
+              />
             <br />
           <br />
           <input type="submit" value="Submit" className='bg-blue hover:bg-blue-dark text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline'/>
