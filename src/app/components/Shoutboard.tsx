@@ -57,8 +57,8 @@ export class Shoutboard extends React.Component<{}, {}> {
                       {this.isVisible && <CreatePost/>}
                       {this.postsStore.posts.map((item) => {
                           return(
-                          <div className="container pb-2 lg:flex" key={item.id}>
-                              <div className="w-full border border-grey-light lg:border-b lg:border-t lg:border-grey-light bg-white rounded-b lg:rounded-b lg:rounded-r p-4 flex flex-col justify-between leading-normal">
+                          <div className="container max-w-full pb-2 lg:flex" key={item.id}>
+                              <div className="w-full border border-grey-light lg:border-b lg:border-t lg:border-grey-light rounded lg:rounded p-4 shadow-md rounded">
                                   <Typography variant="title">{item.name}</Typography>
                                   <Typography>{item.text}</Typography>
                               </div>
@@ -156,7 +156,7 @@ class CreatePost extends React.Component<{ postsStore?: PostsStore }, {}> {
               Create post
             </label>
             <TextField 
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-grey-darker leading-tight focus:outline-none focus:shadow-outline" 
+                className="shadow-md appearance-none border rounded w-full py-2 px-3 text-grey-darker leading-tight focus:outline-none focus:shadow-outline" 
                 value={post.name} 
                 error={this.error != null}
                 onChange={(event) => this.handleUserInput(event, "name")}
@@ -164,7 +164,7 @@ class CreatePost extends React.Component<{ postsStore?: PostsStore }, {}> {
                 placeholder={this.error || "Enter name"} required
             />
             <hr />
-              <TextField type="text" className="shadow appearance-none border rounded w-full py-2 px-3 text-grey-darker mb-3 leading-tight focus:outline-none focus:shadow-outline" 
+              <TextField type="text" className="shadow-md appearance-none border rounded w-full py-2 px-3 text-grey-darker mb-3 leading-tight focus:outline-none focus:shadow-outline" 
                 value={post.text} 
                 onChange={(event) => this.handleUserInput(event, "text")}
                 error={this.errortext != null}
