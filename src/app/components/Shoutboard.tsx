@@ -45,7 +45,7 @@ export class Shoutboard extends React.Component<{}, {}> {
 
     render() {
         return (
-          <Provider posts={this.postsStore}>
+          <Provider postsStore={this.postsStore}>
           	<div className="h-screen flex flex-col">
                   <div className="flex-none">
   	                <Nav />
@@ -54,7 +54,7 @@ export class Shoutboard extends React.Component<{}, {}> {
   	                <h1 className="text-center">Shoutboard will be here</h1>
                       <Button className="bg-grey-light" onClick={this.toggleComponent}> Create Post </Button>
                       <hr/>
-                      {this.isVisible && <CreatePost postsStore={this.postsStore}/>}
+                      {this.isVisible && <CreatePost/>}
                       {this.postsStore.posts.map((item) => {
                           return(
                           <div className="container pb-2 lg:flex" key={item.id}>
@@ -93,7 +93,7 @@ class Post {
 
 }
 
-@inject('posts')
+@inject('postsStore')
 @observer
 class CreatePost extends React.Component<{ postsStore?: PostsStore }, {}> { 
 
