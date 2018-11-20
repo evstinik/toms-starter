@@ -23,46 +23,36 @@ import {TextField, Typography} from '@material-ui/core';
  *      - flexbox (flex, flex-row-reverse, ...)
  */
 
-
+//action.bound
 
 @observer
 export class Shoutboard extends React.Component<{}, {}> {
     constructor(props: any){
         super(props)
-        this.onClickHandler = this.onClickHandler.bind(this)
     }
 
   @observable counter: number = 0
 
-  @observable visible = false
-  private showComponent(showComponent : boolean) {
+  @observable isVisible = false
+  @action.bound private toggleComponent() {
     //console.log(this.visible)
-    this.visible = showComponent
+    this.isVisible = !this.isVisible
   }
 
 
-  private onClickHandler() {
-      if(!this.visible){
-            //console.log(true)
-            this.showComponent(true)
-      }
-      else{
-            //console.log(false)
-            this.showComponent(false)
-      }
-    }
 
     render() {
         return (
+          
         	<div className="h-screen flex flex-col">
                 <div className="flex-none">
 	                <Nav />
                 </div>
                 <div className="flex-1 overflow-y-auto p-4">
 	                <h1 className="text-center">Shoutboard will be here</h1>
-                    <Button className="bg-grey-light" onClick={() => this.onClickHandler()}> Create Post </Button>
+                    <Button className="bg-grey-light" onClick={this.toggleComponent}> Create Post </Button>
                     <hr/>
-                    {this.visible && <CreatePost/>}
+                    {this.isVisible && <CreatePost/>}
                     {routeState.posts.map((item) => {
                         return <div className="container pb-2 lg:flex" key={item.id}>
                             <div className="w-full border border-grey-light lg:border-b lg:border-t lg:border-grey-light bg-white rounded-b lg:rounded-b lg:rounded-r p-4 flex flex-col justify-between leading-normal">
