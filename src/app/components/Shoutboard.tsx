@@ -70,9 +70,7 @@ export class Shoutboard extends React.Component<{}, {}> {
                         </div>
                     })}
                 </div>
-                
             </div>
-
         )
     }
 }
@@ -108,11 +106,15 @@ class CreatePost extends React.Component<{}, {}> {
         this.handleUserInput(event.target.name, event.target.value);
     }*/
 
+    inputValidation(str: string) : boolean{
+      const regex = new RegExp("^[a-zA-z ]{3,15}$")
+      return regex.test(str)
+    }
+
 
     onClick(event, post){
-        const regex = new RegExp("^[a-zA-z ]{3,15}$")
         console.log(`Adding post ${JSON.stringify(post)}`)
-        if(regex.test(post.name)){
+        if(this.inputValidation(post.name)){
             routeState.addPost(post)
             this.post = {
                 _id:`${this.counter++}`,
@@ -126,7 +128,7 @@ class CreatePost extends React.Component<{}, {}> {
         }
 
         event.stopPropagation()
-        
+
     }
 
     render(){
@@ -150,8 +152,7 @@ class CreatePost extends React.Component<{}, {}> {
                 placeholder="Enter text" required
               />
             <br />
-          <br />
-          <input type="submit" value="Submit" className='bg-blue hover:bg-blue-dark text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline'/>
+            <input type="submit" value="Submit" className='bg-blue hover:bg-blue-dark text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline'/>
           </form>
         );
     }
