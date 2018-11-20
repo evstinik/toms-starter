@@ -25,9 +25,7 @@ export class RouteState {
     this.loginRequiredMessage = message
   }
 
-  @action addPost(post: object){
-    this.posts.unshift(post)
-  }
+
 
   @action login() {
     this.loggedIn = true

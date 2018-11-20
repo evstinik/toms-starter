@@ -1,11 +1,12 @@
 import * as React from 'react'
-import { observer, inject } from 'mobx-react'
+import { observer, inject, Provider } from 'mobx-react'
 import { Nav } from 'app/components/Nav'
 import { Button } from '@material-ui/core'
 import { observable, autorun, action } from 'mobx'
 import { routeState } from 'app/routeState'
 import TextareaAutosize from 'react-autosize-textarea';
 import {TextField, Typography} from '@material-ui/core';
+import {PostsStore} from './PostsStore';
 
 
 /**
@@ -24,16 +25,17 @@ import {TextField, Typography} from '@material-ui/core';
  */
 
 //action.bound
-
 @observer
 export class Shoutboard extends React.Component<{}, {}> {
     constructor(props: any){
         super(props)
     }
 
+  postsStore = new PostsStore()
   @observable counter: number = 0
 
   @observable isVisible = false
+
   @action.bound private toggleComponent() {
     //console.log(this.visible)
     this.isVisible = !this.isVisible
@@ -43,26 +45,29 @@ export class Shoutboard extends React.Component<{}, {}> {
 
     render() {
         return (
-          
-        	<div className="h-screen flex flex-col">
-                <div className="flex-none">
-	                <Nav />
-                </div>
-                <div className="flex-1 overflow-y-auto p-4">
-	                <h1 className="text-center">Shoutboard will be here</h1>
-                    <Button className="bg-grey-light" onClick={this.toggleComponent}> Create Post </Button>
-                    <hr/>
-                    {this.isVisible && <CreatePost/>}
-                    {routeState.posts.map((item) => {
-                        return <div className="container pb-2 lg:flex" key={item.id}>
-                            <div className="w-full border border-grey-light lg:border-b lg:border-t lg:border-grey-light bg-white rounded-b lg:rounded-b lg:rounded-r p-4 flex flex-col justify-between leading-normal">
-                                <Typography variant="title">{item.name}</Typography>
-                                <Typography>{item.text}</Typography>
-                            </div>
-                        </div>
-                    })}
+          <Provider posts={this.postsStore}>
+          	<div className="h-screen flex flex-col">
+                  <div className="flex-none">
+  	                <Nav />
+                  </div>
+                  <div className="flex-1 overflow-y-auto p-4">
+  	                <h1 className="text-center">Shoutboard will be here</h1>
+                      <Button className="bg-grey-light" onClick={this.toggleComponent}> Create Post </Button>
+                      <hr/>
+                      {this.isVisible && <CreatePost postsStore={this.postsStore}/>}
+                      {this.postsStore.posts.map((item) => {
+                          return(
+                          <div className="container pb-2 lg:flex" key={item.id}>
+                              <div className="w-full border border-grey-light lg:border-b lg:border-t lg:border-grey-light bg-white rounded-b lg:rounded-b lg:rounded-r p-4 flex flex-col justify-between leading-normal">
+                                  <Typography variant="title">{item.name}</Typography>
+                                  <Typography>{item.text}</Typography>
+                              </div>
+                          </div>
+                          )
+                      })}
                 </div>
             </div>
+          </Provider>
         )
     }
 }
@@ -71,11 +76,15 @@ export class Shoutboard extends React.Component<{}, {}> {
 
 class Post {
   static counter = 0
+
   public id: number
+
   @observable
   public name: string
+
   @observable
   public text: string
+
   constructor(name: string, text: string) {
     this.id = Post.counter++
     this.name = name
@@ -84,13 +93,12 @@ class Post {
 
 }
 
-
+@inject('posts')
 @observer
-class CreatePost extends React.Component<{}, {}> { 
+class CreatePost extends React.Component<{ postsStore?: PostsStore }, {}> { 
 
     constructor(props){
         super(props)
-        this.handleUserInput = this.handleUserInput.bind(this)
         this.onClick = this.onClick.bind(this)
         //this.onChange = this.onChange.bind(this)
     }
@@ -99,9 +107,10 @@ class CreatePost extends React.Component<{}, {}> {
     @observable error : string | null = null
     @observable errortext: string | null = null
 
+
     @observable post : Post = new Post("", "")
 
-    @action handleUserInput(event, key : keyof Post){
+    @action.bound private handleUserInput(event, key : keyof Post){
         const target = event.target;
         this.post[key] = target.value
     }
@@ -133,13 +142,14 @@ class CreatePost extends React.Component<{}, {}> {
               return
         }
         console.log(`Adding post ${JSON.stringify(post)}`)
-        routeState.addPost(post)
+        this.props.postsStore!.addPost(post)
         this.post = new Post("", "")
         this.error = null
         this.errortext = null
     }
     render(){
       const post = this.post
+
         return (
           <form  onSubmit={(event) => this.onClick(event, this.post)} className='bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4'>
             <label className="block text-grey-darker text-sm font-bold mb-2">
