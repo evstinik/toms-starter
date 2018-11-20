@@ -8,9 +8,6 @@ import TextareaAutosize from 'react-autosize-textarea';
 import {TextField, Typography} from '@material-ui/core';
 
 
-
-
-
 /**
  * Shoutboard should consist of:
  *  - form for submitting new message (name, email, message and submit button) with validation
@@ -44,15 +41,15 @@ export class Shoutboard extends React.Component<{}, {}> {
   }
 
 
-    private onClickHandler() {
-        if(!this.visible){
+  private onClickHandler() {
+      if(!this.visible){
             //console.log(true)
             this.showComponent(true)
-        }
-        else{
+      }
+      else{
             //console.log(false)
             this.showComponent(false)
-        }
+      }
     }
 
     render() {
@@ -123,18 +120,18 @@ class CreatePost extends React.Component<{}, {}> {
         this.handleUserInput(event.target.name, event.target.value);
     }*/
 
-    validateNameInput(str: string) : boolean{
+    private validateNameInput(str: string) : boolean{
       const regex = new RegExp("^[a-zA-z ]{3,15}$")
       return regex.test(str)
     }
 
-    validateTextInput(str : string) : boolean{
-      const regex = /^[a-zA-z ].{3,500}\d*$/
+    private validateTextInput(str : string) : boolean{
+      const regex = /^[a-zA-z ].{3,1000}\d*$/
       return regex.test(str)
     }
 
 
-    onClick(event, post : Post){
+    private onClick(event, post : Post){
         event.preventDefault()
         if(!this.validateNameInput(post.name)){
             this.error = "Please enter username in english and without numbers and max 15 letters"
@@ -142,13 +139,14 @@ class CreatePost extends React.Component<{}, {}> {
             return
           }
         if(!this.validateTextInput(post.text)){
-              this.errortext = "Please use english letters and 50 symbols max"
+              this.errortext = "Please use english letters and 1000 symbols max"
               return
         }
         console.log(`Adding post ${JSON.stringify(post)}`)
         routeState.addPost(post)
         this.post = new Post("", "")
         this.error = null
+        this.errortext = null
     }
     render(){
       const post = this.post
