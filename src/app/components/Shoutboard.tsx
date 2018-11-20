@@ -2,10 +2,10 @@ import * as React from 'react'
 import { observer, inject } from 'mobx-react'
 import { Nav } from 'app/components/Nav'
 import { Button } from '@material-ui/core'
-import { observable, autorun } from 'mobx'
+import { observable, autorun, action } from 'mobx'
 import { routeState } from 'app/routeState'
 import TextareaAutosize from 'react-autosize-textarea';
-import TextField from '@material-ui/core/TextField';
+import {TextField, Typography} from '@material-ui/core';
 
 
 
@@ -28,25 +28,30 @@ import TextField from '@material-ui/core/TextField';
 
 
 
-
 @observer
 export class Shoutboard extends React.Component<{}, {}> {
     constructor(props: any){
         super(props)
-        this._onClickHandler = this._onClickHandler.bind(this)
+        this.onClickHandler = this.onClickHandler.bind(this)
     }
 
-    @observable counter: number = 0
+  @observable counter: number = 0
+
+  @observable visible = false
+  private showComponent(showComponent : boolean) {
+    //console.log(this.visible)
+    this.visible = showComponent
+  }
 
 
-    _onClickHandler() {
-        if(!routeState.visible){
+    private onClickHandler() {
+        if(!this.visible){
             //console.log(true)
-            routeState.showComponent(true)
+            this.showComponent(true)
         }
         else{
             //console.log(false)
-            routeState.showComponent(false)
+            this.showComponent(false)
         }
     }
 
@@ -58,14 +63,14 @@ export class Shoutboard extends React.Component<{}, {}> {
                 </div>
                 <div className="flex-1 overflow-y-auto p-4">
 	                <h1 className="text-center">Shoutboard will be here</h1>
-                    <Button className="bg-grey-light" onClick={() => this._onClickHandler()}> Create Post </Button>
+                    <Button className="bg-grey-light" onClick={() => this.onClickHandler()}> Create Post </Button>
                     <hr/>
-                    {routeState.visible && <CreatePost/>}
+                    {this.visible && <CreatePost/>}
                     {routeState.posts.map((item) => {
-                        return <div className="container pb-2 lg:flex" key={item._id}>
+                        return <div className="container pb-2 lg:flex" key={item.id}>
                             <div className="w-full border border-grey-light lg:border-b lg:border-t lg:border-grey-light bg-white rounded-b lg:rounded-b lg:rounded-r p-4 flex flex-col justify-between leading-normal">
-                                <h2>{item.name}</h2>
-                                <p>{item.text}</p>
+                                <Typography variant="title">{item.name}</Typography>
+                                <Typography>{item.text}</Typography>
                             </div>
                         </div>
                     })}
@@ -75,6 +80,24 @@ export class Shoutboard extends React.Component<{}, {}> {
     }
 }
 
+
+
+class Post {
+  static counter = 0
+  public id: number
+  @observable
+  public name: string
+  @observable
+  public text: string
+  constructor(name: string, text: string) {
+    this.id = Post.counter++
+    this.name = name
+    this.text = text
+  }
+
+}
+
+
 @observer
 class CreatePost extends React.Component<{}, {}> { 
 
@@ -83,21 +106,15 @@ class CreatePost extends React.Component<{}, {}> {
         this.handleUserInput = this.handleUserInput.bind(this)
         this.onClick = this.onClick.bind(this)
         //this.onChange = this.onChange.bind(this)
-        autorun(() => console.log(`New post value: ${JSON.stringify(routeState.posts)}`))
     }
 
     @observable counter = 0
     @observable error : string | null = null
+    @observable errortext: string | null = null
 
-    @observable post = {
-        _id:`${this.counter++}`,
-        name: "",
-        text: ""
-    }
+    @observable post : Post = new Post("", "")
 
-
-
-    handleUserInput(event, key){
+    @action handleUserInput(event, key : keyof Post){
         const target = event.target;
         this.post[key] = target.value
     }
@@ -106,32 +123,35 @@ class CreatePost extends React.Component<{}, {}> {
         this.handleUserInput(event.target.name, event.target.value);
     }*/
 
-    inputValidation(str: string) : boolean{
+    validateNameInput(str: string) : boolean{
       const regex = new RegExp("^[a-zA-z ]{3,15}$")
       return regex.test(str)
     }
 
-
-    onClick(event, post){
-        console.log(`Adding post ${JSON.stringify(post)}`)
-        if(this.inputValidation(post.name)){
-            routeState.addPost(post)
-            this.post = {
-                _id:`${this.counter++}`,
-                name: "",
-                text: ""
-            }
-            this.error = null
-        }else{
-            this.error = "Please enter username in english and without numbers and max 15 letters"
-            //alert("Please enter username in english and without numbers and max 15 letters")
-        }
-
-        event.stopPropagation()
-
+    validateTextInput(str : string) : boolean{
+      const regex = /^[a-zA-z ].{3,500}\d*$/
+      return regex.test(str)
     }
 
+
+    onClick(event, post : Post){
+        event.preventDefault()
+        if(!this.validateNameInput(post.name)){
+            this.error = "Please enter username in english and without numbers and max 15 letters"
+            //alert("Please enter username in english and without numbers and max 15 letters")
+            return
+          }
+        if(!this.validateTextInput(post.text)){
+              this.errortext = "Please use english letters and 50 symbols max"
+              return
+        }
+        console.log(`Adding post ${JSON.stringify(post)}`)
+        routeState.addPost(post)
+        this.post = new Post("", "")
+        this.error = null
+    }
     render(){
+      const post = this.post
         return (
           <form  onSubmit={(event) => this.onClick(event, this.post)} className='bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4'>
             <label className="block text-grey-darker text-sm font-bold mb-2">
@@ -139,16 +159,19 @@ class CreatePost extends React.Component<{}, {}> {
             </label>
             <TextField 
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-grey-darker leading-tight focus:outline-none focus:shadow-outline" 
-                value={this.post.name} 
+                value={post.name} 
                 error={this.error != null}
                 onChange={(event) => this.handleUserInput(event, "name")}
                 helperText={this.error || ""}
                 placeholder={this.error || "Enter name"} required
             />
             <hr />
-              <TextareaAutosize type="text" className="shadow appearance-none border border-red rounded w-full py-2 px-3 text-grey-darker mb-3 leading-tight focus:outline-none focus:shadow-outline" 
-                value={this.post.text} 
-                onChange={(event) => this.handleUserInput(event, "text")} 
+              <TextField type="text" className="shadow appearance-none border rounded w-full py-2 px-3 text-grey-darker mb-3 leading-tight focus:outline-none focus:shadow-outline" 
+                value={post.text} 
+                onChange={(event) => this.handleUserInput(event, "text")}
+                error={this.errortext != null}
+                helperText={this.errortext || ""} 
+                multiline={true}
                 placeholder="Enter text" required
               />
             <br />

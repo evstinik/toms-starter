@@ -29,7 +29,6 @@ export class RouteState {
     this.posts.unshift(post)
   }
 
-
   @action login() {
     this.loggedIn = true
     this.loginRequiredMessage = ''
@@ -38,14 +37,6 @@ export class RouteState {
     this.loggedIn = false
     navigate(links.login())
   }
-
-  @observable visible = false
-  @action showComponent(showComponent : boolean) {
-    //console.log(this.visible)
-    this.visible = showComponent
-  }
-
-
 
   @observable profileId: string = ''
   @action setProfile(profileId: string) {
