@@ -7,6 +7,14 @@ export type Route = keyof typeof links
 export class RouteState {
   @observable route: Route = 'login'
 
+  @observable posts = new Array()
+
+  /*@observable post = {
+    name: "",
+    text: ""
+  }*/
+
+
   @action setRoute(route: Route) {
     this.route = route
   }
@@ -16,6 +24,9 @@ export class RouteState {
   @action setLoginRequiredMessage(message: string) {
     this.loginRequiredMessage = message
   }
+
+
+
   @action login() {
     this.loggedIn = true
     this.loginRequiredMessage = ''
