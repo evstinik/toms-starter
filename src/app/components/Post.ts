@@ -16,5 +16,4 @@ export class Post {
     this.name = name
     this.text = text
   }
-
 }

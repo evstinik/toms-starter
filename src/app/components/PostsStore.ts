@@ -3,9 +3,9 @@ import { Post } from './Post'
 
 export class PostsStore {
 
-	@observable posts = new Array<Post>()
+  @observable posts = new Array<Post>()
 
-	@action addPost(post: Post){
-    	this.posts.unshift(post)
+  @action addPost(post: Post){
+    this.posts.unshift(post)
   }
 }
